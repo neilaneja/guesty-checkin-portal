@@ -1,0 +1,29 @@
+{
+  "properties": [
+    {
+      "slug": "west-end-flats",
+      "name": "The West End Flats",
+      "welcomeMessage": "Welcome to The West End Flats!",
+      "logoUrl": "/logos/west-end-flats.png",
+      "brandColor": "#2C3E50",
+      "accentColor": "#E67E22",
+      "fallbackPhone": "(555) 123-4567",
+      "guestyListingIds": [
+        "LISTING_ID_1",
+        "LISTING_ID_2"
+      ]
+    },
+    {
+      "slug": "downtown-suites",
+      "name": "Downtown Suites",
+      "welcomeMessage": "Welcome to Downtown Suites!",
+      "logoUrl": "/logos/downtown-suites.png",
+      "brandColor": "#1A1A2E",
+      "accentColor": "#E94560",
+      "fallbackPhone": "(555) 987-6543",
+      "guestyListingIds": [
+        "LISTING_ID_3"
+      ]
+    }
+  ]
+}

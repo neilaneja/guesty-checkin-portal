@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guesty Check-In Portal — Setup Guide</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #F5F5F5;
+      color: #1A1A1A;
+      line-height: 1.6;
+      padding: 32px 20px;
+    }
+    .container { max-width: 720px; margin: 0 auto; }
+
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #2C3E50;
+    }
+    .intro {
+      font-size: 1.05rem;
+      color: #555;
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid #DDD;
+    }
+
+    .step {
+      background: white;
+      border-radius: 12px;
+      padding: 28px 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+      position: relative;
+    }
+    .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      background: #2C3E50;
+      color: white;
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 12px;
+    }
+    .step h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #2C3E50;
+    }
+    .step p, .step li {
+      font-size: 0.95rem;
+      color: #444;
+      margin-bottom: 8px;
+    }
+    .step ol, .step ul {
+      padding-left: 20px;
+      margin-bottom: 12px;
+    }
+    .step li { margin-bottom: 6px; }
+
+    .time-badge {
+      display: inline-block;
+      background: #E8F5E9;
+      color: #2E7D32;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      margin-left: 8px;
+    }
+
+    .url-box {
+      background: #F8F9FA;
+      border: 1px solid #DEE2E6;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-family: 'SF Mono', Monaco, Consolas, monospace;
+      font-size: 0.88rem;
+      color: #D63384;
+      margin: 12px 0;
+      word-break: break-all;
+    }
+    .code-box {
+      background: #1E1E1E;
+      color: #D4D4D4;
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'SF Mono', Monaco, Consolas, monospace;
+      font-size: 0.85rem;
+      margin: 12px 0;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+    .code-box .key { color: #9CDCFE; }
+    .code-box .val { color: #CE9178; }
+    .code-box .comment { color: #6A9955; }
+
+    .warning {
+      background: #FFF3CD;
+      border-left: 4px solid #FFC107;
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.9rem;
+      margin: 12px 0;
+    }
+    .tip {
+      background: #E3F2FD;
+      border-left: 4px solid #2196F3;
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.9rem;
+      margin: 12px 0;
+    }
+
+    .checklist {
+      list-style: none;
+      padding: 0;
+    }
+    .checklist li {
+      padding: 8px 0 8px 32px;
+      position: relative;
+    }
+    .checklist li::before {
+      content: "☐";
+      position: absolute;
+      left: 4px;
+      font-size: 1.1rem;
+    }
+
+    .divider {
+      height: 1px;
+      background: #EEE;
+      margin: 16px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <h1>Guesty Check-In Portal — Setup Guide</h1>
+    <p class="intro">
+      This guide walks you through deploying your self-serve check-in portal step by step.
+      No coding required — just follow the instructions and fill in your info.
+      Total time: about 30 minutes.
+    </p>
+
+    <!-- ════════════════════════════════════════ -->
+    <!-- STEP 1 -->
+    <!-- ════════════════════════════════════════ -->
+    <div class="step">
+      <div class="step-number">1</div>
+      <span class="time-badge">5 minutes</span>
+      <h2>Create a GitHub Account</h2>
+      <p>GitHub is where your code will live. Railway (the hosting service) pulls from it automatically.</p>
+      <ol>
+        <li>Go to <strong>github.com</strong> and click <strong>"Sign up"</strong></li>
+        <li>Use your email, create a password, and pick a username</li>
+        <li>Verify your email when they send you a confirmation</li>
+      </ol>
+      <div class="tip">If you already have a GitHub account, skip to Step 2.</div>
+    </div>
+
+    <!-- ════════════════════════════════════════ -->
+    <!-- STEP 2 -->
+    <!-- ════════════════════════════════════════ -->
+    <div class="step">
+      <div class="step-number">2</div>
+      <span class="time-badge">5 minutes</span>
+      <h2>Upload the Code to GitHub</h2>
+      <ol>
+        <li>Log into GitHub</li>
+        <li>Click the <strong>+</strong> icon (top right) → <strong>"New repository"</strong></li>
+        <li>Name it <strong>guesty-checkin-portal</strong></li>
+        <li>Keep it <strong>Private</strong></li>
+        <li>Click <strong>"Create repository"</strong></li>
+        <li>On the next page, click <strong>"uploading an existing file"</strong> (it's a link in the instructions)</li>
+        <li>Drag and drop <strong>all the files from the guesty-checkin-portal folder</strong> into the upload area</li>
+        <li>Click <strong>"Commit changes"</strong></li>
+      </ol>
+
+      <div class="warning">
+        <strong>Important:</strong> Make sure you upload the folder <em>contents</em>, not the folder itself.
+        You should see files like <code>server.js</code>, <code>package.json</code>, and folders like <code>api/</code>, <code>public/</code>, <code>config/</code> at the top level.
+      </div>
+
+      <div class="tip">
+        <strong>Don't upload</strong> the <code>.env.example</code> file (it's just a template).
+        Your actual secrets will go into Railway in Step 4.
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════ -->
+    <!-- STEP 3 -->
+    <!-- ════════════════════════════════════════ -->
+    <div class="step">
+      <div class="step-number">3</div>
+      <span class="time-badge">5 minutes</span>
+      <h2>Deploy on Railway</h2>
+      <p>Railway hosts your app and makes it available on the internet.</p>
+      <ol>
+        <li>Go to <strong>railway.app</strong></li>
+        <li>Click <strong>"Login"</strong> → choose <strong>"Login with GitHub"</strong></li>
+        <li>Authorize Railway to access your GitHub</li>
+        <li>Click <strong>"New Project"</strong></li>
+        <li>Select <strong>"Deploy from GitHub Repo"</strong></li>
+        <li>Find and select <strong>guesty-checkin-portal</strong></li>
+        <li>Railway will automatically detect it's a Node.js app and start deploying</li>
+      </ol>
+      <div class="tip">
+        Railway gives you a free tier with $5/month of usage — more than enough for a check-in portal
+        that only gets traffic when guests arrive.
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════ -->
+    <!-- STEP 4 -->
+    <!-- ════════════════════════════════════════ -->
+    <div class="step">
+      <div class="step-number">4</div>
+      <span class="time-badge">10 minutes</span>
+      <h2>Get Your Guesty API Credentials &amp; Add Them to Railway</h2>
+      <p><strong>Part A — Get your Guesty API keys:</strong></p>
+      <ol>
+        <li>Log into your <strong>Guesty Dashboard</strong></li>
+        <li>Go to <strong>Marketplace</strong> (left sidebar) → <strong>Open API</strong></li>
+        <li>Create a new API integration (or use existing)</li>
+        <li>Copy your <strong>Client ID</strong> and <strong>Client Secret</strong></li>
+      </ol>
+
+      <div class="divider"></div>
+
+      <p><strong>Part B — Get your Listing IDs:</strong></p>
+      <ol>
+        <li>In Guesty, go to <strong>Listings</strong></li>
+        <li>Click on a listing</li>
+        <li>Look at the URL in your browser — the ID is the long string after <code>/listings/</code></li>
+        <li>Copy this ID for each property</li>
+      </ol>
+      <p>Example URL:</p>
+      <div class="url-box">https://app.guesty.com/listings/<strong>64a1b2c3d4e5f6a7b8c9d0e1</strong>/details</div>
+      <p>The bold part is your Listing ID.</p>
+
+      <div class="divider"></div>
+
+      <p><strong>Part C — Add secrets to Railway:</strong></p>
+      <ol>
+        <li>In Railway, click on your deployed service</li>
+        <li>Go to the <strong>"Variables"</strong> tab</li>
+        <li>Click <strong>"New Variable"</strong> and add these two:</li>
+      </ol>
+      <div class="code-box"><span class="key">GUESTY_CLIENT_ID</span> = <span class="val">your_client_id_here</span>
+<span class="key">GUESTY_CLIENT_SECRET</span> = <span class="val">your_client_secret_here</span></div>
+      <ol start="4">
+        <li>Railway will automatically redeploy with the new variables</li>
+      </ol>
+    </div>
+
+    <!-- ════════════════════════════════════════ -->
+    <!-- STEP 5 -->
+    <!-- ════════════════════════════════════════ -->
+    <div class="step">
+      <div class="step-number">5</div>
+      <span class="time-badge">5 minutes</span>
+      <h2>Configure Your Properties</h2>
+      <p>Before deploying, you need to edit <code>config/properties.json</code> in your GitHub repo with your actual property details.</p>
+      <ol>
+        <li>Go to your GitHub repository</li>
+        <li>Click on <code>config</code> → <code>properties.json</code></li>
+        <li>Click the <strong>pencil icon</strong> (edit) in the top right</li>
+        <li>Replace the example data with your real property info:</li>
+      </ol>
+      <div class="code-box"><span class="comment">// For each property, fill in:</span>
+{
+  "<span class="key">slug</span>": "<span class="val">west-end-flats</span>",         <span class="comment">// URL-safe name (no spaces)</span>
+  "<span class="key">name</span>": "<span class="val">The West End Flats</span>",      <span class="comment">// Display name guests will see</span>
+  "<span class="key">welcomeMessage</span>": "<span class="val">Welcome!</span>",      <span class="comment">// Greeting on the check-in page</span>
+  "<span class="key">logoUrl</span>": "<span class="val">/logos/my-logo.png</span>",    <span class="comment">// or leave blank ""</span>
+  "<span class="key">brandColor</span>": "<span class="val">#2C3E50</span>",            <span class="comment">// Header color (hex)</span>
+  "<span class="key">accentColor</span>": "<span class="val">#E67E22</span>",           <span class="comment">// Button color (hex)</span>
+  "<span class="key">fallbackPhone</span>": "<span class="val">(555) 123-4567</span>",  <span class="comment">// Emergency contact</span>
+  "<span class="key">guestyListingIds</span>": ["<span class="val">your_listing_id</span>"]  <span class="comment">// From Step 4B</span>
+}</div>
+      <ol start="5">
+        <li>Click <strong>"Commit changes"</strong> — Railway will auto-redeploy</li>
+      </ol>
+
+      <div class="tip">
+        <strong>Pick colors:</strong> Use <strong>google.com/search?q=color+picker</strong> to find hex color codes you like.
+        The brand color is used for headings, the accent color is used for the search button.
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════ -->
+    <!-- STEP 6 -->
+    <!-- ════════════════════════════════════════ -->
+    <div class="step">
+      <div class="step-number">6</div>
+      <span class="time-badge">5 minutes</span>
+      <h2>Connect Your Custom Domain</h2>
+      <p>Railway gives you a URL like <code>guesty-checkin-portal.up.railway.app</code>, but you want guests to see your own domain.</p>
+      <ol>
+        <li>In Railway, click your service → <strong>"Settings"</strong> tab</li>
+        <li>Scroll to <strong>"Custom Domain"</strong></li>
+        <li>Type your domain (e.g., <code>thewestendflats.com</code>) and click <strong>Add</strong></li>
+        <li>Railway shows you a <strong>CNAME record</strong> to add</li>
+        <li>Go to wherever you bought your domain (GoDaddy, Namecheap, Cloudflare, etc.)</li>
+        <li>Find <strong>DNS Settings</strong></li>
+        <li>Add a new <strong>CNAME record</strong>:</li>
+      </ol>
+      <div class="code-box"><span class="key">Type:</span>  <span class="val">CNAME</span>
+<span class="key">Name:</span>  <span class="val">@</span>  (or leave blank — this means "the root domain")
+<span class="key">Value:</span> <span class="val">[the value Railway gave you]</span></div>
+      <ol start="8">
+        <li>Wait 5–30 minutes for DNS to propagate</li>
+        <li>Railway handles SSL (the lock icon) automatically</li>
+      </ol>
+      <div class="warning">
+        <strong>If your domain provider doesn't support CNAME on the root domain</strong> (some don't), use a subdomain like
+        <code>checkin.thewestendflats.com</code> instead. Or switch your DNS to Cloudflare (free) which does support it.
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════ -->
+    <!-- STEP 7 -->
+    <!-- ════════════════════════════════════════ -->
+    <div class="step">
+      <div class="step-number">7</div>
+      <span class="time-badge">5 minutes</span>
+      <h2>Verify the Guesty Check-In Form URL</h2>
+      <p>This is an important step. The app redirects guests to their Guesty check-in form, but the exact URL pattern can vary by account.</p>
+      <ol>
+        <li>In Guesty, go to <strong>Operations → Guest App</strong></li>
+        <li>Find a test reservation and look at its check-in form link</li>
+        <li>The URL will look something like:<br>
+          <code>https://app.guestybooking.com/guest-app/RESERVATION_ID</code></li>
+        <li>If your URL looks different, you'll need to update one line in <code>server.js</code></li>
+      </ol>
+      <div class="tip">
+        If you're not sure, send me (Neil) a screenshot of what the check-in form URL looks like in your Guesty dashboard,
+        and I can tell you if the code needs to change.
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════ -->
+    <!-- STEP 8 -->
+    <!-- ════════════════════════════════════════ -->
+    <div class="step">
+      <div class="step-number">8</div>
+      <span class="time-badge">2 minutes</span>
+      <h2>Test It</h2>
+      <ol>
+        <li>Open your domain in a browser: <code>yourdomain.com/checkin/your-property-slug</code></li>
+        <li>You should see the branded check-in page with the last name field</li>
+        <li>Enter a last name that matches a current reservation in Guesty</li>
+        <li>You should be redirected to the Guesty check-in form</li>
+      </ol>
+      <div class="warning">
+        <strong>If "Reservation not found":</strong> Make sure the listing IDs in <code>properties.json</code> are correct,
+        and that the test reservation's check-in date is within 48 hours of right now.
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════ -->
+    <!-- STEP 9 -->
+    <!-- ════════════════════════════════════════ -->
+    <div class="step">
+      <div class="step-number">9</div>
+      <span class="time-badge">5 minutes</span>
+      <h2>Print Your QR Code Signs</h2>
+      <ol>
+        <li>Go to: <code>yourdomain.com/signage/your-property-slug</code></li>
+        <li>The form auto-fills with your property info</li>
+        <li>Click <strong>"Generate Sign"</strong> to preview</li>
+        <li>Click <strong>"Print"</strong></li>
+        <li>Print on cardstock or regular paper, then laminate</li>
+        <li>Place at each property entrance near the door</li>
+      </ol>
+      <div class="tip">
+        <strong>Pro tip:</strong> Print a few extras. Weather and wear will degrade outdoor signs.
+        Consider placing one at the front door and one inside the entry area as a backup.
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════ -->
+    <!-- CHECKLIST -->
+    <!-- ════════════════════════════════════════ -->
+    <div class="step">
+      <h2>Final Checklist</h2>
+      <ul class="checklist">
+        <li>GitHub account created</li>
+        <li>Code uploaded to GitHub repository</li>
+        <li>Railway account created and linked to GitHub</li>
+        <li>Guesty API credentials added to Railway variables</li>
+        <li>properties.json updated with real property info and listing IDs</li>
+        <li>Custom domain connected and SSL working</li>
+        <li>Guesty check-in form URL verified</li>
+        <li>Test check-in completed successfully</li>
+        <li>QR code signs printed and placed at properties</li>
+      </ul>
+    </div>
+
+  </div>
+</body>
+</html>

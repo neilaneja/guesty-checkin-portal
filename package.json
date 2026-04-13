@@ -1,0 +1,19 @@
+{
+  "name": "guesty-checkin-portal",
+  "version": "1.0.0",
+  "description": "Self-serve check-in portal for vacation rental properties, powered by Guesty PMS",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1",
+    "node-cache": "^5.1.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
