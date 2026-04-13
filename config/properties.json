@@ -7,7 +7,7 @@
       "logoUrl": "/logos/west-end-flats.png",
       "brandColor": "#2C3E50",
       "accentColor": "#E67E22",
-      "fallbackPhone": "(555) 123-4567",
+      "fallbackPhone": "(855) 919-7368",
       "guestyListingIds": [
         "LISTING_ID_1",
         "LISTING_ID_2"
@@ -20,7 +20,7 @@
       "logoUrl": "/logos/downtown-suites.png",
       "brandColor": "#1A1A2E",
       "accentColor": "#E94560",
-      "fallbackPhone": "(555) 987-6543",
+      "fallbackPhone": "(855) 919-7368",
       "guestyListingIds": [
         "LISTING_ID_3"
       ]
