@@ -5,6 +5,36 @@ const GUESTY_API_BASE = 'https://open-api.guesty.com';
 const tokenCache = new NodeCache({ stdTTL: 82800 }); // 23 hours (tokens last 24h)
 
 // ─────────────────────────────────────────────
+// Helper: wait for a given number of milliseconds
+// ─────────────────────────────────────────────
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// ─────────────────────────────────────────────
+// Helper: make an API request with automatic 429 retry
+// Waits and retries up to 2 times if rate-limited
+// ─────────────────────────────────────────────
+async function apiRequestWithRetry(config) {
+  const maxRetries = 2;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await axios(config);
+    } catch (err) {
+      if (err.response && err.response.status === 429 && attempt < maxRetries) {
+        // Get retry delay from header, or default to 10 seconds
+        const retryAfter = parseInt(err.response.headers['retry-after'], 10) || 10;
+        const waitMs = Math.min(retryAfter * 1000, 30000); // cap at 30 seconds
+        console.log(`Rate limited (429). Waiting ${waitMs / 1000}s before retry ${attempt + 1}/${maxRetries}...`);
+        await sleep(waitMs);
+      } else {
+        throw err;
+      }
+    }
+  }
+}
+
+// ─────────────────────────────────────────────
 // Get or refresh the OAuth2 access token
 // ─────────────────────────────────────────────
 async function getGuestyToken() {
@@ -21,12 +51,15 @@ async function getGuestyToken() {
     );
   }
 
-  const response = await axios.post(`${GUESTY_API_BASE}/oauth2/token`, {
-    grant_type: 'client_credentials',
-    scope: 'open-api',
-    client_id: clientId,
-    client_secret: clientSecret,
-  }, {
+  const response = await apiRequestWithRetry({
+    method: 'post',
+    url: `${GUESTY_API_BASE}/oauth2/token`,
+    data: {
+      grant_type: 'client_credentials',
+      scope: 'open-api',
+      client_id: clientId,
+      client_secret: clientSecret,
+    },
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
   });
 
@@ -51,7 +84,7 @@ function normalizeName(name) {
 // ─────────────────────────────────────────────
 // Search for reservations by guest last name
 // Searches ALL listings within a ±48 hour window
-// Makes exactly ONE API call — normalizes the name to proper case first
+// Makes exactly ONE search API call
 // ─────────────────────────────────────────────
 async function searchReservations(token, lastName, listingIds) {
   const now = new Date();
@@ -88,7 +121,9 @@ async function searchReservations(token, lastName, listingIds) {
     sort: 'checkIn',
   };
 
-  const response = await axios.get(`${GUESTY_API_BASE}/v1/reservations`, {
+  const response = await apiRequestWithRetry({
+    method: 'get',
+    url: `${GUESTY_API_BASE}/v1/reservations`,
     headers: {
       Authorization: `Bearer ${token}`,
       Accept: 'application/json',
