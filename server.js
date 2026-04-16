@@ -153,6 +153,39 @@ function buildCheckInFormUrl(reservation, property) {
 }
 
 // ─────────────────────────────────────────────
+// API: Check Guesty rate limit status
+// Visit /api/rate-limit-status to see remaining quota
+// ─────────────────────────────────────────────
+app.get('/api/rate-limit-status', async (req, res) => {
+  try {
+    const token = await getGuestyToken();
+    // Make a lightweight API call to check rate limit headers
+    const response = await require('axios').get(`${require('./api/guesty').GUESTY_API_BASE || 'https://open-api.guesty.com'}/v1/reservations`, {
+      headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+      params: { limit: 1, fields: '_id' },
+    });
+    const headers = response.headers;
+    res.json({
+      status: 'ok',
+      rateLimits: {
+        perSecond: { limit: headers['x-ratelimit-limit-second'], remaining: headers['x-ratelimit-remaining-second'] },
+        perMinute: { limit: headers['x-ratelimit-limit-minute'], remaining: headers['x-ratelimit-remaining-minute'] },
+        perHour: { limit: headers['x-ratelimit-limit-hour'], remaining: headers['x-ratelimit-remaining-hour'] },
+      },
+    });
+  } catch (err) {
+    const status = err.response?.status || 'unknown';
+    const retryAfter = err.response?.headers?.['retry-after'] || 'not provided';
+    res.json({
+      status: 'rate_limited',
+      httpStatus: status,
+      retryAfterSeconds: retryAfter,
+      message: status === 429 ? `Still rate limited. Retry after ${retryAfter} seconds.` : err.message,
+    });
+  }
+});
+
+// ─────────────────────────────────────────────
 // Serve signage template
 // ─────────────────────────────────────────────
 app.get('/signage/:slug', (req, res) => {
