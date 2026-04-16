@@ -16,6 +16,17 @@ function findProperty(slug) {
 }
 
 // ─────────────────────────────────────────────
+// Route: Root URL redirects to the first property's check-in page
+// (so visiting the bare domain doesn't show "Cannot GET /")
+// ─────────────────────────────────────────────
+app.get('/', (req, res) => {
+  if (properties.length > 0) {
+    return res.redirect(`/checkin/${properties[0].slug}`);
+  }
+  res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
+});
+
+// ─────────────────────────────────────────────
 // Route: Serve the check-in page for a property
 // Supports both /checkin/:slug and /checkinform (legacy single-property)
 // ─────────────────────────────────────────────
