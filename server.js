@@ -4,6 +4,14 @@ const path = require('path');
 const { getGuestyToken, searchReservations } = require('./api/guesty');
 const properties = require('./config/properties.json').properties;
 
+// Debug: log whether Guesty env vars are present at startup
+console.log('ENV CHECK:', {
+  GUESTY_CLIENT_ID: process.env.GUESTY_CLIENT_ID ? `SET (${process.env.GUESTY_CLIENT_ID.substring(0, 4)}...)` : 'MISSING',
+  GUESTY_CLIENT_SECRET: process.env.GUESTY_CLIENT_SECRET ? `SET (${process.env.GUESTY_CLIENT_SECRET.substring(0, 4)}...)` : 'MISSING',
+  NODE_ENV: process.env.NODE_ENV || 'not set',
+  PORT: process.env.PORT || 'not set',
+});
+
 const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -98,7 +106,7 @@ app.post('/api/lookup', async (req, res) => {
           checkOut: results[0].checkOutDateLocalized || results[0].checkOut,
           listingName: results[0].listing?.title || '',
           // The Guesty check-in form URL
-          checkInFormUrl: buildCheckInFormUrl(results[0]),
+          checkInFormUrl: buildCheckInFormUrl(results[0], property),
         },
       });
     }
@@ -114,7 +122,7 @@ app.post('/api/lookup', async (req, res) => {
         checkIn: r.checkInDateLocalized || r.checkIn,
         checkOut: r.checkOutDateLocalized || r.checkOut,
         listingName: r.listing?.title || '',
-        checkInFormUrl: buildCheckInFormUrl(r),
+        checkInFormUrl: buildCheckInFormUrl(r, property),
       })),
     });
   } catch (err) {
@@ -129,22 +137,19 @@ app.post('/api/lookup', async (req, res) => {
 // ─────────────────────────────────────────────
 // Build the Guesty Guest App check-in form URL
 // ─────────────────────────────────────────────
-// Guesty's check-in form URL pattern. This uses the standard Guest App URL.
-// If your account uses a custom domain for the guest app, update this.
-function buildCheckInFormUrl(reservation) {
-  // Option 1: If the reservation object contains a direct guestAppUrl or
-  // checkInFormUrl field from Guesty, use that directly.
+// URL pattern: https://guest-app.guesty.com/r/{reservationId}/{base64Token}
+// The base64 token encodes the guest app name: {{guest_app::west_end_flats}}
+function buildCheckInFormUrl(reservation, property) {
+  // If the reservation object contains a direct guestAppUrl, use that
   if (reservation.guestAppUrl) {
     return reservation.guestAppUrl;
   }
 
-  // Option 2: Construct the standard Guesty Guest App check-in URL.
-  // The format is: https://app.guestybooking.com/guest-app/{reservationId}
-  // NOTE: Verify this URL pattern in your Guesty dashboard under
-  // Operations → Guest App. The exact format may vary by account.
-  // You may also use the Guest App API to retrieve the URL dynamically:
-  //   GET /v1/guest-app-api/guest-app-runtime/{reservationId}/module/check_in/summary
-  return `https://app.guestybooking.com/guest-app/${reservation._id}`;
+  // Build the URL using the guest app name from the property config
+  const guestAppName = property.guestyGuestAppName || 'default';
+  const tokenPayload = `{{guest_app::${guestAppName}}}`;
+  const base64Token = Buffer.from(tokenPayload).toString('base64');
+  return `https://guest-app.guesty.com/r/${reservation._id}/${base64Token}`;
 }
 
 // ─────────────────────────────────────────────
