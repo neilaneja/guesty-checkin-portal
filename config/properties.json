@@ -8,12 +8,8 @@
       "brandColor": "#2C3E50",
       "accentColor": "#E67E22",
       "fallbackPhone": "(855) 919-7368",
-      "guestyListingIds": [
-        "69080ee2eed9140012fdbee0",
-        "69080fe3b863f100121cde80",
-        "675b59cb6ec2560012768ec3",
-        "675b50d3e896730010a51b1c"
-      ]
+      "guestyListingIds": [],
+      "guestyGuestAppName": "west_end_flats"
     }
   ]
 }
