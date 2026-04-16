@@ -44,50 +44,65 @@ async function searchReservations(token, lastName, listingIds) {
   const windowStart = new Date(now.getTime() - 48 * 60 * 60 * 1000); // 48h ago
   const windowEnd = new Date(now.getTime() + 48 * 60 * 60 * 1000);   // 48h from now
 
-  // Build the Guesty filter array
-  // Search all listings — no listing ID filter needed
-  const filters = [
-    { operator: '$eq', field: 'guest.lastName', value: lastName },
-    { operator: '$in', field: 'status', value: ['confirmed', 'checked_in'] },
+  // Guesty's $eq filter is case-sensitive, so we try multiple common formats
+  // e.g. "smith" → try "Smith", "smith", "SMITH"
+  const nameVariations = [
+    lastName.charAt(0).toUpperCase() + lastName.slice(1).toLowerCase(), // Smith
+    lastName.toLowerCase(),                                              // smith
+    lastName.toUpperCase(),                                              // SMITH
+    lastName,                                                            // as typed
   ];
+  // Remove duplicates
+  const uniqueNames = [...new Set(nameVariations)];
 
-  // Add date range: check-in within the window
-  // We look for reservations where checkIn <= windowEnd AND checkOut >= windowStart
-  // This catches guests who are checking in soon or are currently staying
-  filters.push(
-    { operator: '$lte', field: 'checkIn', value: windowEnd.toISOString() },
-    { operator: '$gte', field: 'checkOut', value: windowStart.toISOString() }
-  );
+  // Try each name variation until we find results
+  for (const nameAttempt of uniqueNames) {
+    const filters = [
+      { operator: '$eq', field: 'guest.lastName', value: nameAttempt },
+      { operator: '$in', field: 'status', value: ['confirmed', 'checked_in'] },
+    ];
 
-  const params = {
-    filters: JSON.stringify(filters),
-    fields: [
-      '_id',
-      'guest.firstName',
-      'guest.lastName',
-      'guest.fullName',
-      'checkIn',
-      'checkOut',
-      'checkInDateLocalized',
-      'checkOutDateLocalized',
-      'listing.title',
-      'listing._id',
-      'status',
-      'guestAppUrl',
-    ].join(' '),
-    limit: 10,
-    sort: 'checkIn',
-  };
+    filters.push(
+      { operator: '$lte', field: 'checkIn', value: windowEnd.toISOString() },
+      { operator: '$gte', field: 'checkOut', value: windowStart.toISOString() }
+    );
 
-  const response = await axios.get(`${GUESTY_API_BASE}/v1/reservations`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/json',
-    },
-    params,
-  });
+    const params = {
+      filters: JSON.stringify(filters),
+      fields: [
+        '_id',
+        'guest.firstName',
+        'guest.lastName',
+        'guest.fullName',
+        'checkIn',
+        'checkOut',
+        'checkInDateLocalized',
+        'checkOutDateLocalized',
+        'listing.title',
+        'listing._id',
+        'status',
+        'guestAppUrl',
+      ].join(' '),
+      limit: 10,
+      sort: 'checkIn',
+    };
 
-  return response.data.results || [];
+    const response = await axios.get(`${GUESTY_API_BASE}/v1/reservations`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+      },
+      params,
+    });
+
+    const results = response.data.results || [];
+    if (results.length > 0) {
+      return results;
+    }
+  }
+
+  // No results found with any name variation
+  return [];
 }
 
 module.exports = { getGuestyToken, searchReservations };
